@@ -112,6 +112,56 @@
   .ghead{background:var(--ghbg,#F3EEE3);border-bottom-color:var(--bandcol,#E0D7C6)}
   .gcard{border-top:3px solid var(--bandcol,#C7402F)}
   .garch{display:inline-flex;align-items:center;justify-content:center;width:24px;height:28px;border-radius:12px 12px 4px 4px;color:#fff;font-weight:800;font-size:14px;box-shadow:0 1px 2px rgba(0,0,0,.18);flex:none}
+
+/* ===== 今日賽程 + 小組一覽 ===== */
+.daynav{display:flex;align-items:center;justify-content:center;gap:12px;margin:4px 0 14px;flex-wrap:wrap}
+.daynav>button{font-size:20px;line-height:1;border:1px solid #E0D7C6;background:#fff;color:#2A2620;width:40px;height:40px;border-radius:50%;cursor:pointer}
+.daynav>button:hover{background:#F1ECE0}
+.tdlabel{font-size:22px;font-weight:800;min-width:128px;text-align:center}
+.tdlabel .twd{color:#8C8472;font-size:16px;font-weight:600}
+.tdlabel .tnow{font-size:12px;color:#fff;background:#C7402F;border-radius:999px;padding:2px 9px;margin-left:4px;vertical-align:2px}
+.ttoday{font-size:13px;border:1px solid #E0D7C6;background:#fff;color:#2A2620;height:34px;border-radius:999px;padding:0 15px;cursor:pointer}
+.ttoday:hover{background:#F1ECE0}
+.tm{display:flex;align-items:center;gap:8px;padding:11px 12px;border:1px solid #ECE4D6;border-radius:12px;background:#fff;margin-bottom:8px}
+.tm.arg{background:#E7F1FB;box-shadow:inset 3px 0 0 #1F6FB2}
+.tm .tt{font-weight:700;color:#33485E;font-variant-numeric:tabular-nums;min-width:46px}
+.tm.arg .tt{color:#1F6FB2}
+.tm .tg{font-size:11px;color:#8C8472;background:#F3EEE3;border-radius:5px;padding:1px 7px;white-space:nowrap}
+.tm .tnm{flex:1;text-align:right;font-size:15px}
+.tm .tnm.r{text-align:left}
+.tm .tnm.tbd{color:#A89E8A;font-style:italic}
+.tm .sc{width:40px;text-align:center}
+.tm .dash{color:#A89E8A}
+.tnone{text-align:center;color:#8C8472;padding:40px 10px}
+#cleangrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+@media(max-width:520px){.tm .tnm{font-size:14px}.tm{gap:6px;padding:10px 9px}}
+
+/* ===== 日／週 切換 + 週檢視 ===== */
+.segwrap{display:flex;gap:8px;justify-content:center;margin:2px 0 8px;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid #E0D7C6;border-radius:999px;overflow:hidden;background:#fff}
+.seg button{border:none;background:transparent;padding:7px 17px;font:inherit;color:#6b6357;cursor:pointer}
+.seg button.on{background:#33485E;color:#fff}
+.wklist{display:flex;flex-direction:column;gap:12px}
+.wkday{border:1px solid #ECE4D6;border-radius:12px;padding:8px 10px;background:#fff}
+.wkday.we{background:#FBF5EA}
+.wkday.td{border-color:#C7402F;box-shadow:0 0 0 2px #F7E3DE}
+.wkhd{font-weight:800;margin:2px 2px 8px;font-size:15px}
+.wkhd span{color:#8C8472;font-weight:600;font-size:13px}
+.wkhd b{font-size:11px;color:#fff;background:#C7402F;border-radius:999px;padding:1px 8px;margin-left:4px;font-weight:700}
+.wkempty{color:#C7BCA6;text-align:center;padding:6px}
+.wkgrid{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch}
+.gcol{flex:0 0 152px;border:1px solid #ECE4D6;border-radius:12px;padding:6px;background:#fff}
+.gcol.we{background:#FBF5EA}
+.gcol.td{border-color:#C7402F;box-shadow:0 0 0 2px #F7E3DE}
+.gcolh{text-align:center;font-weight:800;font-size:13px;color:#33485E;padding:4px 0 8px;border-bottom:1px dashed #E0D7C6;margin-bottom:6px;line-height:1.35}
+.gcell-m{border-radius:8px;padding:6px;margin-bottom:6px;background:#F7F4ED}
+.gcell-m.arg{background:#E7F1FB;box-shadow:inset 3px 0 0 #1F6FB2}
+.gt{font-size:11px;color:#8C8472;font-weight:700}
+.gt span{font-weight:400}
+.gnm{font-size:12px;line-height:1.3}
+.gsc{display:flex;align-items:center;gap:3px;margin:3px 0}
+.gsc .sc{width:30px;text-align:center;padding:2px}
+.gsc span{color:#A89E8A}
 </style>
 </head>
 <body>
@@ -134,14 +184,32 @@
     </div>
   </div>
   <div class="tabs">
-    <button class="tab on" data-v="g">① 小組賽 · 積分</button>
-    <button class="tab" data-v="k">② 淘汰賽 · 行事曆</button>
-    <button class="tab" data-v="f">③ 國旗表（剪貼用）</button>
+    <button class="tab on" data-v="t">賽程</button>
+    <button class="tab" data-v="g">小組賽 · 積分</button>
+    <button class="tab" data-v="clean">小組一覽</button>
+    <button class="tab" data-v="k">淘汰賽 · 行事曆</button>
+    <button class="tab" data-v="f">國旗表</button>
     <span class="save" id="saveState"></span>
   </div>
 
+  <!-- TODAY VIEW -->
+  <section class="view on" id="view-t">
+    <p class="hint">台灣時間。「日」看當天、「週」看整週（清單或格狀）。直接填比分，積分與淘汰賽同步更新。‹ › 換日／換週，按「今天」跳回。</p>
+    <div class="segwrap">
+      <div class="seg" id="segMode"><button data-m="day" class="on">日</button><button data-m="week">週</button></div>
+      <div class="seg" id="segLay" style="display:none"><button data-l="list" class="on">清單</button><button data-l="grid">格狀</button></div>
+    </div>
+    <div class="daynav">
+      <button id="tprev" title="上一個">‹</button>
+      <div class="tdlabel" id="tdlabel"></div>
+      <button id="tnext" title="下一個">›</button>
+      <button id="ttoday" class="ttoday">今天</button>
+    </div>
+    <div id="todaywrap"></div>
+  </section>
+
   <!-- GROUP VIEW -->
-  <section class="view on" id="view-g">
+  <section class="view" id="view-g">
     <p class="hint">每格填入比分即可，積分與名次自動算。綠＝小組前 2 晉級，橘＝小組第 3（待比較）。已知比分已先幫你填好。</p>
     <div class="ggrid" id="ggrid"></div>
     <div class="panel" id="thpanel">
@@ -149,6 +217,12 @@
       <div class="thirds" id="thirds"></div>
       <p class="fnote" id="thnote" style="margin-top:8px"></p>
     </div>
+  </section>
+
+  <!-- CLEAN GROUPS VIEW -->
+  <section class="view" id="view-clean">
+    <p class="hint">乾淨版：各組隊伍與目前名次，沒有輸入框、方便截圖。沒填分數時就是原始分組。綠＝前 2、橘＝第 3。</p>
+    <div id="cleangrid"></div>
   </section>
 
   <!-- KNOCKOUT VIEW -->
@@ -441,7 +515,7 @@ document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
   document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on")); t.classList.add("on");
   document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));
   document.getElementById("view-"+t.dataset.v).classList.add("on");
-  if(t.dataset.v==="k") renderKO(); if(t.dataset.v==="f") renderFlags();
+  var vv=t.dataset.v; if(vv==="k") renderKO(); else if(vv==="f") renderFlags(); else if(vv==="t") renderToday(); else if(vv==="clean") renderClean(); else if(vv==="g") renderGroups();
 });
 document.getElementById("fCopies").oninput=renderFlags;
 document.getElementById("fSize").onchange=renderFlags;
@@ -467,7 +541,130 @@ document.getElementById("docBtn").onclick=()=>{
 };
 
 document.getElementById("archband").innerHTML=Array.from({length:30},(_,i)=>'<div class="arch" style="background:'+PAL[i%PAL.length]+'"></div>').join("");
+
+/* ===== 今日賽程 + 小組一覽（新增） ===== */
+const WD3=["日","一","二","三","四","五","六"];
+/* [date,time,group,plainA,plainB] 台灣時間；6/27-6/28 最後一輪依循環賽校正 */
+const GFIX=[
+ ["6/21","01:00","F","荷蘭","瑞典"],["6/21","04:00","E","德國","象牙海岸"],["6/21","08:00","E","厄瓜多","古拉索"],["6/21","12:00","F","突尼西亞","日本"],
+ ["6/22","00:00","H","西班牙","沙烏地阿拉伯"],["6/22","03:00","G","比利時","伊朗"],["6/22","06:00","H","烏拉圭","維德角"],["6/22","09:00","G","紐西蘭","埃及"],
+ ["6/23","01:00","J","阿根廷","奧地利"],["6/23","05:00","I","法國","伊拉克"],["6/23","08:00","I","挪威","塞內加爾"],["6/23","11:00","J","約旦","阿爾及利亞"],
+ ["6/24","01:00","K","葡萄牙","烏茲別克"],["6/24","04:00","L","英格蘭","迦納"],["6/24","07:00","L","巴拿馬","克羅埃西亞"],["6/24","10:00","K","哥倫比亞","剛果民主"],
+ ["6/25","03:00","B","瑞士","加拿大"],["6/25","03:00","B","波赫","卡達"],["6/25","06:00","C","摩洛哥","海地"],["6/25","06:00","C","蘇格蘭","巴西"],["6/25","09:00","A","南非","韓國"],["6/25","09:00","A","捷克","墨西哥"],
+ ["6/26","04:00","E","古拉索","象牙海岸"],["6/26","04:00","E","厄瓜多","德國"],["6/26","07:00","F","突尼西亞","荷蘭"],["6/26","07:00","F","日本","瑞典"],["6/26","10:00","D","土耳其","美國"],["6/26","10:00","D","巴拉圭","澳洲"],
+ ["6/27","03:00","H","沙烏地阿拉伯","烏拉圭"],["6/27","03:00","H","維德角","西班牙"],["6/27","06:00","G","伊朗","紐西蘭"],["6/27","06:00","G","埃及","比利時"],["6/27","09:00","I","法國","挪威"],["6/27","09:00","I","塞內加爾","伊拉克"],
+ ["6/28","03:00","J","阿根廷","約旦"],["6/28","03:00","J","阿爾及利亞","奧地利"],["6/28","06:00","L","英格蘭","巴拿馬"],["6/28","06:00","L","克羅埃西亞","迦納"],["6/28","09:00","K","哥倫比亞","葡萄牙"],["6/28","09:00","K","烏茲別克","剛果民主"],
+];
+const mdNum=s=>{const p=s.split("/");return (+p[0])*100+(+p[1]);};
+function todayMD(){const t=new Date();return (t.getMonth()+1)+"/"+t.getDate();}
+function allDates(){const set=new Set(GFIX.map(x=>x[0]));Object.values(KO_WHEN).forEach(w=>set.add(w[0]));return [...set].sort((a,b)=>mdNum(a)-mdNum(b));}
+const DATES=allDates();
+function initDayIdx(){const t=mdNum(todayMD());let i=DATES.findIndex(d=>mdNum(d)===t);if(i<0){i=DATES.findIndex(d=>mdNum(d)>=t);if(i<0)i=DATES.length-1;}return i;}
+let dayIdx=initDayIdx();
+function wdOf(md){const p=md.split("/");return WD3[new Date(2026,(+p[0])-1,+p[1]).getDay()];}
+function findGM(g,a,b){const arr=S.gm[g]||[];for(let i=0;i<arr.length;i++){const x=arr[i];if(strip(x.a)===a&&strip(x.b)===b)return {i:i,flip:false};if(strip(x.a)===b&&strip(x.b)===a)return {i:i,flip:true};}return null;}
+function collectRows(MD){
+  const out=[];
+  GFIX.filter(x=>x[0]===MD).forEach(x=>{
+    const g=x[2],a=x[3],b=x[4]; const loc=findGM(g,a,b); if(!loc)return;
+    const m=S.gm[g][loc.i];
+    const an=loc.flip?m.b:m.a, bn=loc.flip?m.a:m.b;
+    const saF=loc.flip?"sb":"sa", sbF=loc.flip?"sa":"sb";
+    out.push({t:x[1],kind:'g',g:g,an:an,bn:bn,gi:g,gj:loc.i,saF:saF,sbF:sbF,sav:(m[saF]==null?'':m[saF]),sbv:(m[sbF]==null?'':m[sbF]),arg:(strip(an)==="阿根廷"||strip(bn)==="阿根廷")});
+  });
+  const fr=fullResolve(); const res=fr.res;
+  ["r32","r16","qf","sf","third","fin"].forEach(rd=>KO[rd].forEach(m=>{
+    const w=KO_WHEN[m.no]; if(!w||w[0]!==MD)return; const r=res[m.no];
+    const sc=(S.koScore[m.no]||"").split("-");
+    out.push({t:w[1],kind:'k',no:m.no,label:ROUND_LABEL[rd],aName:strip(r.a.name),bName:strip(r.b.name),aTbd:r.a.tbd,bTbd:r.b.tbd,sa:(sc[0]||''),sb:(sc[1]||''),arg:(strip(r.a.name)==="阿根廷"||strip(r.b.name)==="阿根廷")});
+  }));
+  out.sort((p,q)=>p.t.localeCompare(q.t));
+  return out;
+}
+function fullRow(e){
+  if(e.kind==='g')return '<div class="tm '+(e.arg?'arg':'')+'"><span class="tt">'+e.t+'</span><span class="tg">'+e.g+'組</span><span class="tnm">'+esc(e.an)+'</span><input class="sc" data-gi="'+e.gi+'" data-gj="'+e.gj+'" data-f="'+e.saF+'" value="'+e.sav+'" inputmode="numeric"><span class="dash">–</span><input class="sc" data-gi="'+e.gi+'" data-gj="'+e.gj+'" data-f="'+e.sbF+'" value="'+e.sbv+'" inputmode="numeric"><span class="tnm r">'+esc(e.bn)+'</span></div>';
+  return '<div class="tm ko '+(e.arg?'arg':'')+'"><span class="tt">'+e.t+'</span><span class="tg">'+e.label+' #'+e.no+'</span><span class="tnm '+(e.aTbd?'tbd':'')+'">'+esc(e.aName)+'</span><input class="sc" data-kno="'+e.no+'" data-f="kosc-a" value="'+e.sa+'" inputmode="numeric"><span class="dash">–</span><input class="sc" data-kno="'+e.no+'" data-f="kosc-b" value="'+e.sb+'" inputmode="numeric"><span class="tnm r '+(e.bTbd?'tbd':'')+'">'+esc(e.bName)+'</span></div>';
+}
+function gridRow(e){
+  const a=e.kind==='g'?e.an:e.aName, b=e.kind==='g'?e.bn:e.bName;
+  const sa=e.kind==='g'?e.sav:e.sa, sb=e.kind==='g'?e.sbv:e.sb;
+  const da=e.kind==='g'?('data-gi="'+e.gi+'" data-gj="'+e.gj+'" data-f="'+e.saF+'"'):('data-kno="'+e.no+'" data-f="kosc-a"');
+  const db=e.kind==='g'?('data-gi="'+e.gi+'" data-gj="'+e.gj+'" data-f="'+e.sbF+'"'):('data-kno="'+e.no+'" data-f="kosc-b"');
+  const tag=e.kind==='g'?(e.g+'組'):(e.label);
+  return '<div class="gcell-m '+(e.arg?'arg':'')+'"><div class="gt">'+e.t+' <span>'+tag+'</span></div><div class="gnm">'+esc(a)+'</div><div class="gsc"><input class="sc" '+da+' value="'+sa+'" inputmode="numeric"><span>–</span><input class="sc" '+db+' value="'+sb+'" inputmode="numeric"></div><div class="gnm">'+esc(b)+'</div></div>';
+}
+let mode="day", wlay="list";
+const T0=new Date(2026,5,12), T1=new Date(2026,6,20);
+let cur=new Date(); if(cur<T0)cur=new Date(T0); if(cur>T1)cur=new Date(T1);
+const md2=d=>(d.getMonth()+1)+"/"+d.getDate();
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x;};
+const mondayOf=d=>{const x=new Date(d);x.setHours(0,0,0,0);return addDays(x,-(((x.getDay()+6)%7)));};
+const clampD=d=>{const x=new Date(d);x.setHours(0,0,0,0);if(x<T0)return new Date(T0);if(x>T1)return new Date(T1);return x;};
+function render(){
+  document.querySelectorAll('#segMode button').forEach(x=>x.classList.toggle('on',x.dataset.m===mode));
+  document.getElementById('segLay').style.display = mode==='week'?'inline-flex':'none';
+  document.querySelectorAll('#segLay button').forEach(x=>x.classList.toggle('on',x.dataset.l===wlay));
+  const W=document.getElementById('todaywrap'), lbl=document.getElementById('tdlabel'), tMD=todayMD();
+  if(mode==='day'){
+    const MD=md2(cur);
+    lbl.innerHTML=MD+' <span class="twd">('+wdOf(MD)+')</span>'+(MD===tMD?' <span class="tnow">今天</span>':'');
+    const rows=collectRows(MD);
+    W.innerHTML=rows.length?rows.map(fullRow).join(''):'<div class="tnone">這天沒有比賽　·　用 ‹ › 看其他日子</div>';
+  }else{
+    const mon=mondayOf(cur), sun=addDays(mon,6);
+    const tt=new Date(); tt.setHours(0,0,0,0); const inWk=(tt>=mon&&tt<=sun);
+    lbl.innerHTML=md2(mon)+'–'+md2(sun)+(inWk?' <span class="tnow">本週</span>':'');
+    if(wlay==='list'){
+      let h='';
+      for(let i=0;i<7;i++){const d=addDays(mon,i),MD=md2(d),we=(d.getDay()===0||d.getDay()===6),isT=(MD===tMD);
+        const rows=collectRows(MD);
+        h+='<div class="wkday'+(we?' we':'')+(isT?' td':'')+'"><div class="wkhd">'+MD+' <span>('+wdOf(MD)+')</span>'+(isT?' <b>今天</b>':'')+'</div>'+(rows.length?rows.map(fullRow).join(''):'<div class="wkempty">—</div>')+'</div>';
+      }
+      W.innerHTML='<div class="wklist">'+h+'</div>';
+    }else{
+      let cols='';
+      for(let i=0;i<7;i++){const d=addDays(mon,i),MD=md2(d),we=(d.getDay()===0||d.getDay()===6),isT=(MD===tMD);
+        const rows=collectRows(MD);
+        cols+='<div class="gcol'+(we?' we':'')+(isT?' td':'')+'"><div class="gcolh">'+wdOf(MD)+'<br>'+MD+'</div>'+(rows.length?rows.map(gridRow).join(''):'<div class="wkempty">—</div>')+'</div>';
+      }
+      W.innerHTML='<div class="wkgrid">'+cols+'</div>';
+    }
+  }
+}
+function renderToday(){render();}
+document.getElementById("tprev").onclick=function(){cur=clampD(addDays(cur,mode==='day'?-1:-7));render();};
+document.getElementById("tnext").onclick=function(){cur=clampD(addDays(cur,mode==='day'?1:7));render();};
+document.getElementById("ttoday").onclick=function(){cur=clampD(new Date());render();};
+document.querySelectorAll('#segMode button').forEach(b=>b.onclick=function(){mode=b.dataset.m;render();});
+document.querySelectorAll('#segLay button').forEach(b=>b.onclick=function(){wlay=b.dataset.l;render();});
+document.getElementById("todaywrap").addEventListener("input",function(e){
+  const f=e.target.dataset.f; if(!f)return;
+  if(e.target.dataset.gi){
+    const g=e.target.dataset.gi,i=+e.target.dataset.gj; let v=e.target.value.trim(); v=v===""?null:(isNaN(+v)?null:+v);
+    S.gm[g][i][f]=v; debSave(); renderGroups(); renderClean();
+  }else if(e.target.dataset.kno){
+    const no=+e.target.dataset.kno;
+    const a=document.querySelector('#todaywrap [data-kno="'+no+'"][data-f="kosc-a"]').value.trim();
+    const b=document.querySelector('#todaywrap [data-kno="'+no+'"][data-f="kosc-b"]').value.trim();
+    S.koScore[no]=a+"-"+b; debSave();
+  }
+});
+function renderClean(){
+  let html="";
+  for(const g of Object.keys(GROUPS)){
+    const gi=Object.keys(GROUPS).indexOf(g); const col=PAL[gi%PAL.length];
+    const st=standings(g); const arr=st.arr;
+    let rows="";
+    arr.forEach((o,i)=>{const cls=i<2?"q"+(i+1):(i===2?"q3":"");
+      rows+='<tr class="'+cls+'"><td class="pos">'+(i+1)+'</td><td class="tn">'+esc(o.t)+'</td><td>'+o.pld+'</td><td>'+o.w+'</td><td>'+o.d+'</td><td>'+o.l+'</td><td>'+(o.gd>0?'+':'')+o.gd+'</td><td><b>'+o.pts+'</b></td></tr>';});
+    html+='<div class="gcard" style="--bandcol:'+col+';--ghbg:'+col+'14"><div class="ghead"><span class="garch" style="background:'+col+'">'+g+'</span><span class="gl">第 '+g+' 組</span><span class="gst">'+(st.complete?"✓ 已踢完":"進行中")+'</span></div><table class="st"><tr><th></th><th style="text-align:left">隊伍</th><th>賽</th><th>勝</th><th>平</th><th>負</th><th>淨</th><th>分</th></tr>'+rows+'</table></div>';
+  }
+  document.getElementById("cleangrid").innerHTML=html;
+}
+
 renderGroups();
+renderClean();
+renderToday();
 if("serviceWorker" in navigator){addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}
 </script>
 </body>
