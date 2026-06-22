@@ -120,8 +120,10 @@
 .tdlabel{font-size:22px;font-weight:800;min-width:128px;text-align:center}
 .tdlabel .twd{color:#8C8472;font-size:16px;font-weight:600}
 .tdlabel .tnow{font-size:12px;color:#fff;background:#C7402F;border-radius:999px;padding:2px 9px;margin-left:4px;vertical-align:2px}
-.ttoday{font-size:13px;border:1px solid #E0D7C6;background:#fff;color:#2A2620;height:34px;border-radius:999px;padding:0 15px;cursor:pointer}
-.ttoday:hover{background:#F1ECE0}
+.daynav>button.ttoday{font-size:13px;width:auto;height:32px;border:1px solid #E0D7C6;background:#fff;color:#6b6357;border-radius:999px;padding:0 14px;cursor:pointer;white-space:nowrap}
+.daynav>button.ttoday:hover{background:#F1ECE0}
+.daynav>button.ttoday.off{opacity:.4;cursor:default}
+.daynav>button.ttoday.live{color:#C7402F;border-color:#D8A59B}
 .tm{display:flex;align-items:center;gap:8px;padding:11px 12px;border:1px solid #ECE4D6;border-radius:12px;background:#fff;margin-bottom:8px}
 .tm.arg{background:#E7F1FB;box-shadow:inset 3px 0 0 #1F6FB2}
 .tm .tt{font-weight:700;color:#33485E;font-variant-numeric:tabular-nums;min-width:46px}
@@ -162,6 +164,45 @@
 .gsc{display:flex;align-items:center;gap:3px;margin:3px 0}
 .gsc .sc{width:30px;text-align:center;padding:2px}
 .gsc span{color:#A89E8A}
+
+/* ===== 修正：今天鈕 + 國旗挑選 + 列印版面 ===== */
+.ttoday{white-space:nowrap}
+.daynav>button{flex:none}
+.fpick{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 10px}
+.fchip{display:inline-flex;align-items:center;gap:5px;border:1px solid #E0D7C6;border-radius:999px;padding:4px 11px 4px 8px;font-size:12px;cursor:pointer;background:#fff;color:#6b6357}
+.fchip.on{background:#EAF3EA;border-color:#9CC6A0;color:#23402a}
+.fchip input{margin:0}
+.fchip img{width:20px;height:15px;border:1px solid #C9BFAE;border-radius:2px}
+.fchkall{background:#F3EEE3;border-radius:8px;padding:5px 9px!important}
+#printArea .pt-h{font-weight:800;font-size:13pt;margin:0 0 3mm;text-align:center}
+#printArea .pt-day{font-weight:700;font-size:10.5pt;margin:3mm 0 1mm;border-bottom:1px solid #999;padding-bottom:1mm}
+#printArea .pt-tab{width:100%;border-collapse:collapse;font-size:9.5pt;margin-bottom:1mm}
+#printArea .pt-tab td{padding:1.3mm 2mm;border-bottom:0.3pt solid #ddd}
+#printArea .pt-t{width:18mm;color:#333}
+#printArea .pt-g{width:26mm;color:#666;font-size:8pt}
+#printArea .pt-a{text-align:right}
+#printArea .pt-s{text-align:center;width:14mm;font-weight:700}
+#printArea .pt-b{text-align:left}
+#printArea .pt-none{color:#999;padding:1mm 0 2mm}
+#printArea .pst-card{margin-bottom:3mm;break-inside:avoid;display:inline-block;width:48%;vertical-align:top;margin-right:1%}
+#printArea .pst-h{font-weight:700;margin:0 0 1mm;font-size:10pt}
+#printArea .pst-tab{width:100%;border-collapse:collapse;font-size:8.5pt}
+#printArea .pst-tab th,#printArea .pst-tab td{border:0.3pt solid #ccc;padding:0.8mm 1.2mm;text-align:center}
+#printArea .pst-tab td.l{text-align:left}
+
+/* ===== 列印：七欄週曆 ===== */
+#printArea .wkcal{width:100%;border-collapse:collapse;table-layout:fixed}
+#printArea .wkcal th{border:0.4pt solid #B9AE99;background:#F3EEE3;font-size:9pt;padding:2mm 1mm;font-weight:800}
+#printArea .wkcal th span{font-weight:600;color:#6b6357;font-size:8pt}
+#printArea .wkcal th.we,#printArea .wkcal td.we{background:#FBF5EA}
+#printArea .wkcal td{border:0.4pt solid #CFC6B4;vertical-align:top;padding:1.5mm 1mm;width:14.28%}
+#printArea .cm{margin-bottom:1.8mm;break-inside:avoid}
+#printArea .cm.arg{background:#E7F1FB;border-radius:1mm;padding:0.6mm 1.2mm}
+#printArea .cmt{font-size:7pt;color:#555;font-weight:700;margin-bottom:0.3mm}
+#printArea .kob{color:#888;font-weight:400;margin-left:1mm}
+#printArea .cmn{font-size:7.5pt;line-height:1.45;display:flex;align-items:center;gap:1mm;flex-wrap:wrap}
+#printArea .cmn img{width:4.5mm;height:3.4mm;border:0.2pt solid #C9BFAE}
+#printArea .cmnone{color:#c4bba8;font-size:8pt}
 </style>
 </head>
 <body>
@@ -233,15 +274,26 @@
 
   <!-- FLAG VIEW -->
   <section class="view" id="view-f">
-    <p class="hint">依目前算出的晉級 32 隊產生國旗表。每隊張數越多、國旗越小（一張 A4 內排滿）。要放進 A5 賽程樹建議「小／1.2cm」。</p>
+    <p class="hint">勾選要印的隊伍、選每隊張數與大小，按列印。預設全選晉級隊伍；按「全選」可確保 32 隊都印到。勾「全部 48 隊」可在出線前先印任一隊。</p>
     <div class="fctl">
-      <label>每隊張數 <input type="number" id="fCopies" min="1" max="8" value="5" style="width:56px"></label>
+      <label>每隊張數 <input type="number" id="fCopies" min="1" max="12" value="4" style="width:56px"></label>
       <label>國旗大小
-        <select id="fSize"><option value="14">小 1.0cm（賽程樹用）</option><option value="17" selected>中 1.2cm</option><option value="21">大 1.5cm</option></select>
+        <select id="fSize">
+          <option value="1.0">1.0 cm（賽程樹用）</option>
+          <option value="1.2">1.2 cm</option>
+          <option value="1.5">1.5 cm</option>
+          <option value="2.0" selected>2.0 cm</option>
+          <option value="2.5">2.5 cm</option>
+          <option value="3.0">3.0 cm</option>
+        </select>
       </label>
+      <label class="fchkall"><input type="checkbox" id="fAll48"> 全部 48 隊</label>
+      <button class="btn" id="fSelAll">全選</button>
+      <button class="btn" id="fSelNone">全不選</button>
       <button class="btn primary" id="fPrint">列印 / 存 PDF</button>
-      <span class="fnote" id="fStat"></span>
     </div>
+    <div id="fpick" class="fpick"></div>
+    <span class="fnote" id="fStat"></span>
     <div id="flagsheet"></div>
   </section>
 </div>
@@ -468,28 +520,37 @@ function sideHTML(no,side,slot,r){
 }
 
 /* ---------- render: flags ---------- */
+let flagSel=null;
+function flagPool(){return document.getElementById("fAll48").checked?Object.values(GROUPS).flat():qualified32();}
+function selTeams(){return flagPool().filter(t=>flagSel&&flagSel.has(t));}
+function renderPicker(){
+  const pool=flagPool();
+  if(flagSel===null)flagSel=new Set(pool);
+  document.getElementById("fpick").innerHTML=pool.map(t=>{const on=flagSel.has(t);const f=flagOf(t);return `<label class="fchip${on?' on':''}"><input type="checkbox" data-team="${esc(t)}" ${on?'checked':''}>${f?`<img src="${f}">`:''}${esc(strip(t))}</label>`;}).join("");
+  renderFlags();
+}
 function renderFlags(){
-  const q=qualified32(); const copies=+document.getElementById("fCopies").value||5; const w=+document.getElementById("fSize").value;
-  const h=Math.round(w*0.75);
-  const cells=[]; q.forEach(t=> { for(let i=0;i<copies;i++) cells.push(t); });
-  const sheet=document.getElementById("flagsheet");
-  sheet.innerHTML = `<div class="fgrid">`+cells.map(t=>{
-    const f=flagOf(t); return `<div class="fcell">${f?`<img src="${f}" style="width:${w*2}px;height:${h*2}px">`:''}<span>${esc(strip(t))}</span></div>`;
-  }).join("")+`</div>`;
-  document.getElementById("fStat").textContent=`目前晉級 ${q.length} 隊 × ${copies} 張 = ${cells.length} 面（國旗約 ${(w/14*1.0).toFixed(1)}cm）`;
+  const copies=+document.getElementById("fCopies").value||4;
+  const cm=parseFloat(document.getElementById("fSize").value)||2;
+  const wpx=Math.round(cm*37.8),hpx=Math.round(wpx*0.75);
+  const sel=selTeams(); const cells=[]; sel.forEach(t=>{for(let i=0;i<copies;i++)cells.push(t);});
+  document.getElementById("flagsheet").innerHTML=`<div class="fgrid">`+cells.map(t=>{const f=flagOf(t);return `<div class="fcell">${f?`<img src="${f}" style="width:${wpx}px;height:${hpx}px">`:''}<span>${esc(strip(t))}</span></div>`;}).join("")+`</div>`;
+  const q=qualified32().length;
+  document.getElementById("fStat").textContent=`已選 ${sel.length} 隊 × ${copies} 張 = ${cells.length} 面 ・ 國旗 ${cm.toFixed(1)}cm`+(document.getElementById("fAll48").checked?"":` ・ 目前晉級 ${q}/32 隊`);
 }
 function printFlags(){
-  const q=qualified32(); const copies=+document.getElementById("fCopies").value||5; const w=+document.getElementById("fSize").value; const h=Math.round(w*0.75);
-  const cells=[]; q.forEach(t=>{for(let i=0;i<copies;i++)cells.push(t);});
-  const mm=(w/56.69).toFixed(2);
+  const copies=+document.getElementById("fCopies").value||4;
+  const cm=parseFloat(document.getElementById("fSize").value)||2;
+  const wmm=(cm*10).toFixed(1),hmm=(cm*7.5).toFixed(1);
+  const sel=selTeams(); if(!sel.length){flash("尚未選擇隊伍");return;}
+  const cells=[]; sel.forEach(t=>{for(let i=0;i<copies;i++)cells.push(t);});
   document.getElementById("printArea").innerHTML=
-    `<div style="text-align:center;font-weight:700;margin-bottom:3mm">2026 世界盃 · 晉級 32 隊國旗剪貼表（每隊 ${copies} 張）</div>`+
-    `<div style="display:flex;flex-wrap:wrap;gap:1.5mm;justify-content:flex-start">`+
-    cells.map(t=>{const f=flagOf(t);return `<div style="text-align:center"><img src="${f}" style="width:${(w/56.69*10).toFixed(1)}mm;height:${(h/56.69*10).toFixed(1)}mm;border:0.3pt solid #C9BFAE"><div style="font-size:6pt">${esc(strip(t))}</div></div>`;}).join("")+
+    `<div style="text-align:center;font-weight:700;margin-bottom:3mm">2026 世界盃 · 國旗剪貼表（${sel.length} 隊 × 每隊 ${copies} 張）</div>`+
+    `<div style="display:flex;flex-wrap:wrap;gap:2mm;justify-content:flex-start">`+
+    cells.map(t=>{const f=flagOf(t);return `<div style="text-align:center"><img src="${f}" style="width:${wmm}mm;height:${hmm}mm;border:0.3pt solid #C9BFAE"><div style="font-size:7pt">${esc(strip(t))}</div></div>`;}).join("")+
     `</div>`;
   window.print();
 }
-
 /* ---------- events ---------- */
 document.getElementById("ggrid").addEventListener("input",e=>{
   const f=e.target.dataset.f; if(!f) return;
@@ -515,12 +576,77 @@ document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
   document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on")); t.classList.add("on");
   document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));
   document.getElementById("view-"+t.dataset.v).classList.add("on");
-  var vv=t.dataset.v; if(vv==="k") renderKO(); else if(vv==="f") renderFlags(); else if(vv==="t") renderToday(); else if(vv==="clean") renderClean(); else if(vv==="g") renderGroups();
+  var vv=t.dataset.v; if(vv==="k") renderKO(); else if(vv==="f") renderPicker(); else if(vv==="t") renderToday(); else if(vv==="clean") renderClean(); else if(vv==="g") renderGroups();
 });
 document.getElementById("fCopies").oninput=renderFlags;
 document.getElementById("fSize").onchange=renderFlags;
 document.getElementById("fPrint").onclick=printFlags;
-document.getElementById("pdfBtn").onclick=()=>window.print();
+document.getElementById("fAll48").addEventListener("change",()=>{flagSel=new Set(flagPool());renderPicker();});
+document.getElementById("fSelAll").onclick=()=>{flagSel=new Set(flagPool());renderPicker();};
+document.getElementById("fSelNone").onclick=()=>{flagSel=new Set();renderPicker();};
+document.getElementById("fpick").addEventListener("change",e=>{const t=e.target.dataset.team;if(!t)return;if(e.target.checked)flagSel.add(t);else flagSel.delete(t);e.target.closest(".fchip").classList.toggle("on",e.target.checked);renderFlags();});
+function printRow(e){
+  const a=strip(e.kind==='g'?e.an:e.aName), b=strip(e.kind==='g'?e.bn:e.bName);
+  const sa=e.kind==='g'?e.sav:e.sa, sb=e.kind==='g'?e.sbv:e.sb;
+  const has=(sa!==''&&sa!=null&&sb!==''&&sb!=null);
+  const tag=e.kind==='g'?(e.g+'組'):(e.label+' #'+e.no);
+  return `<tr${e.arg?' style="font-weight:700"':''}><td class="pt-t">${e.t}</td><td class="pt-g">${tag}</td><td class="pt-a">${esc(a)}</td><td class="pt-s">${has?sa+'–'+sb:'—'}</td><td class="pt-b">${esc(b)}</td></tr>`;
+}
+function printSchedule(){
+  let html='';
+  if(mode==='week'){
+    const mon=mondayOf(cur);
+    html+=`<div class="pt-h">本週賽程　${md2(mon)}–${md2(addDays(mon,6))}（台灣時間）</div>`;
+    for(let i=0;i<7;i++){const d=addDays(mon,i),MD=md2(d);const rows=collectRows(MD);
+      html+=`<div class="pt-day">${MD}（${wdOf(MD)}）</div>`+(rows.length?('<table class="pt-tab">'+rows.map(printRow).join('')+'</table>'):'<div class="pt-none">—</div>');}
+  }else{
+    const MD=md2(cur);const rows=collectRows(MD);
+    html+=`<div class="pt-h">${MD}（${wdOf(MD)}）賽程（台灣時間）</div>`+(rows.length?('<table class="pt-tab">'+rows.map(printRow).join('')+'</table>'):'<div class="pt-none">這天沒有比賽</div>');
+  }
+  document.getElementById("printArea").innerHTML=html; window.print();
+}
+function printStandings(){
+  let html='<div class="pt-h">小組積分（台灣時間）</div>';
+  for(const g of Object.keys(GROUPS)){const st=standings(g);
+    const rows=st.arr.map((o,i)=>`<tr><td>${i+1}</td><td class="l">${esc(strip(o.t))}</td><td>${o.pld}</td><td>${o.w}</td><td>${o.d}</td><td>${o.l}</td><td>${o.gd>0?'+':''}${o.gd}</td><td><b>${o.pts}</b></td></tr>`).join('');
+    html+=`<div class="pst-card"><div class="pst-h">第 ${g} 組 ${st.complete?'✓':''}</div><table class="pst-tab"><tr><th>#</th><th>隊伍</th><th>賽</th><th>勝</th><th>平</th><th>負</th><th>淨</th><th>分</th></tr>${rows}</table></div>`;}
+  document.getElementById("printArea").innerHTML=html; window.print();
+}
+function printKO(){
+  const res=fullResolve().res;let rows='';
+  ["r32","r16","qf","sf","third","fin"].forEach(rd=>KO[rd].forEach(m=>{const w=KO_WHEN[m.no];const r=res[m.no];const sc=(S.koScore[m.no]||'').split('-');const has=sc[0]&&sc[1];
+    rows+=`<tr><td class="pt-t">${w?w[0]+' '+w[1]:''}</td><td class="pt-g">${ROUND_LABEL[rd]} #${m.no}</td><td class="pt-a">${esc(strip(r.a.name))}</td><td class="pt-s">${has?sc[0]+'–'+sc[1]:'—'}</td><td class="pt-b">${esc(strip(r.b.name))}</td></tr>`;}));
+  document.getElementById("printArea").innerHTML='<div class="pt-h">淘汰賽行事曆（台灣時間）</div><table class="pt-tab">'+rows+'</table>';window.print();
+}
+function setOrient(land){let st=document.getElementById('pageorient');if(!st){st=document.createElement('style');st.id='pageorient';document.head.appendChild(st);}st.textContent='@media print{@page{size:A4 '+(land?'landscape':'portrait')+';margin:7mm}}';}
+function printWeekGrid(){
+  const mon=mondayOf(cur), wd=["一","二","三","四","五","六","日"]; let head='',body='';
+  for(let i=0;i<7;i++){const d=addDays(mon,i),MD=md2(d),we=(d.getDay()===0||d.getDay()===6);
+    head+=`<th class="${we?'we':''}">${wd[i]}<br><span>${MD}</span></th>`;
+    const rows=collectRows(MD);
+    const cell=rows.map(e=>{
+      const a=strip(e.kind==='g'?e.an:e.aName), b=strip(e.kind==='g'?e.bn:e.bName);
+      const fa=flagOf(e.kind==='g'?e.an:e.aName), fb=flagOf(e.kind==='g'?e.bn:e.bName);
+      const sa=e.kind==='g'?e.sav:e.sa, sb=e.kind==='g'?e.sbv:e.sb;
+      const has=(sa!==''&&sa!=null&&sb!==''&&sb!=null); const mid=has?`<b>${sa}–${sb}</b>`:'–';
+      const tag=e.kind==='g'?'':`<span class="kob">${e.label} #${e.no}</span>`;
+      return `<div class="cm${e.arg?' arg':''}"><div class="cmt">${e.arg?'★ ':''}${e.t}${tag}</div><div class="cmn">${fa?`<img src="${fa}">`:''}${esc(a)} ${mid} ${esc(b)}${fb?`<img src="${fb}">`:''}</div></div>`;
+    }).join('')||'<div class="cmnone">—</div>';
+    body+=`<td class="${we?'we':''}">${cell}</td>`;
+  }
+  document.getElementById("printArea").innerHTML=
+    `<div class="pt-h">2026 FIFA 世界盃 · 本週賽程　${md2(mon)}–${md2(addDays(mon,6))}（台灣時間）　★ 阿根廷</div>`+
+    `<table class="wkcal"><thead><tr>${head}</tr></thead><tbody><tr>${body}</tr></tbody></table>`;
+  setOrient(true); window.print();
+}
+document.getElementById("pdfBtn").onclick=()=>{
+  const tab=document.querySelector('.tab.on'); const v=tab?tab.dataset.v:'t';
+  if(v==='f'){setOrient(false);printFlags();return;}
+  if(v==='k'){setOrient(false);printKO();return;}
+  if(v==='g'||v==='clean'){setOrient(false);printStandings();return;}
+  if(v==='t'&&mode==='week'){printWeekGrid();return;}
+  setOrient(false);printSchedule();
+};
 
 /* export / import / reset */
 document.getElementById("expBtn").onclick=()=>{const b=new Blob([JSON.stringify(S,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="世界盃計算機備份.json";a.click();URL.revokeObjectURL(a.href);flash("已匯出 ✓");};
@@ -630,6 +756,7 @@ function render(){
       W.innerHTML='<div class="wkgrid">'+cols+'</div>';
     }
   }
+  {const tb=document.getElementById('ttoday');let cure;if(mode==='day'){cure=(md2(cur)===todayMD());}else{const mo=mondayOf(cur),su=addDays(mo,6);const tt=new Date();tt.setHours(0,0,0,0);cure=(tt>=mo&&tt<=su);}if(tb){tb.classList.toggle('off',cure);tb.classList.toggle('live',!cure);}}
 }
 function renderToday(){render();}
 document.getElementById("tprev").onclick=function(){cur=clampD(addDays(cur,mode==='day'?-1:-7));render();};
