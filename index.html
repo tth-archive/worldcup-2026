@@ -295,6 +295,7 @@
   <!-- KNOCKOUT VIEW -->
   <section class="view" id="view-k">
     <p class="hint">32 強對戰由小組名次自動帶入；「第 3 名」格用下拉選晉級的第 3 名（每格只列可放的組別）。輸入比分後勝方自動晉級到下一輪。任何一格都能手動覆寫。</p>
+    <button class="btn" id="brkBtn" style="margin:0 0 12px">🌳 列印賽程樹（PDF）</button>
     <div id="kowrap"></div>
   </section>
 
@@ -703,6 +704,39 @@ function printWeekGrid(){
     `<table class="wkcal"><thead><tr>${head}</tr></thead><tbody><tr>${body}</tr></tbody></table>`;
   setOrient(true); window.print();
 }
+function printBracket(){
+  const res=fullResolve().res;
+  const R32=[74,77,73,75,83,84,81,82,76,78,79,80,86,88,85,87];
+  const FE={89:[74,77],90:[73,75],93:[83,84],94:[81,82],91:[76,78],92:[79,80],95:[86,88],96:[85,87],97:[89,90],98:[93,94],99:[91,92],100:[95,96],101:[97,98],102:[99,100],104:[101,102]};
+  const R16=[89,90,93,94,91,92,95,96],QF=[97,98,99,100],SF=[101,102],FN=[104];
+  const colX=[14,232,450,668,886],boxW=168,boxH=30,rowH=40,topY=44;
+  const cy={}; R32.forEach((no,i)=>cy[no]=topY+i*rowH+boxH/2);
+  [...R16,...QF,...SF,...FN].forEach(no=>{const f=FE[no];cy[no]=(cy[f[0]]+cy[f[1]])/2;});
+  const colOf={}; R32.forEach(n=>colOf[n]=0);R16.forEach(n=>colOf[n]=1);QF.forEach(n=>colOf[n]=2);SF.forEach(n=>colOf[n]=3);FN.forEach(n=>colOf[n]=4);
+  const isArg=no=>{const r=res[no];return !!r&&(strip(r.a.name)==="阿根廷"||strip(r.b.name)==="阿根廷");};
+  function box(no,x,ccy,th){const r=res[no]||{a:{name:''},b:{name:''}};const y=ccy-boxH/2;const sc=(S.koScore[no]||"").split(/[-–:]/);const hl=isArg(no);
+    const fill=th?'#FFF8EE':(hl?'#EAF2FB':'#fff'),strk=th?'#D9B589':(hl?'#1F6FB2':'#B9AE99'),sw=hl?1.5:0.7;
+    return `<rect x="${x}" y="${y}" width="${boxW}" height="${boxH}" rx="3" fill="${fill}" stroke="${strk}" stroke-width="${sw}"/>`
+      +`<line x1="${x}" y1="${y+boxH/2}" x2="${x+boxW}" y2="${y+boxH/2}" stroke="#E9E1D0" stroke-width="0.5"/>`
+      +`<text x="${x+5}" y="${y+11}" font-size="8" fill="#222">${esc(strip(r.a.name)||'')}</text><text x="${x+boxW-4}" y="${y+11}" font-size="8" text-anchor="end" font-weight="bold">${sc[0]||''}</text>`
+      +`<text x="${x+5}" y="${y+24}" font-size="8" fill="#222">${esc(strip(r.b.name)||'')}</text><text x="${x+boxW-4}" y="${y+24}" font-size="8" text-anchor="end" font-weight="bold">${sc[1]||''}</text>`
+      +`<text x="${x+1}" y="${y-2}" font-size="6" fill="#aaa">#${no}</text>`;
+  }
+  function conn(no){const f=FE[no];const c0=cy[f[0]],c1=cy[f[1]],cc=cy[no];const xfR=colX[colOf[f[0]]]+boxW;const xcL=colX[colOf[no]];const midx=(xfR+xcL)/2;const hl=isArg(no);
+    return `<path d="M${xfR} ${c0} H${midx} M${xfR} ${c1} H${midx} M${midx} ${c0} V${c1} M${midx} ${cc} H${xcL}" stroke="${hl?'#1F6FB2':'#C9BFAE'}" stroke-width="${hl?1.3:0.6}" fill="none"/>`;
+  }
+  let svg='';
+  [...R16,...QF,...SF,...FN].forEach(no=>svg+=conn(no));
+  [...R32,...R16,...QF,...SF,...FN].forEach(no=>svg+=box(no,colX[colOf[no]],cy[no],false));
+  const thirdY=topY+16*rowH+12,tx=colX[3];
+  svg+=`<text x="${tx}" y="${thirdY-4}" font-size="9" fill="#B06A2A" font-weight="bold">季軍賽 #103</text>`+box(103,tx,thirdY+boxH/2,true);
+  const heads=["32 強","16 強","8 強","4 強","冠軍賽"];
+  const hd=heads.map((t,i)=>`<text x="${colX[i]+boxW/2}" y="26" font-size="11" text-anchor="middle" font-weight="bold" fill="#33485E">${t}</text>`).join('');
+  const W=colX[4]+boxW+14,H=thirdY+boxH+22;
+  document.getElementById("printArea").innerHTML=`<div class="pt-h">2026 FIFA 世界盃 · 淘汰賽賽程樹（台灣時間）　藍＝阿根廷路線</div>`
+    +`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;max-height:186mm" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans TC',sans-serif">${hd}${svg}</svg>`;
+  setOrient(true); window.print();
+}
 document.getElementById("pdfBtn").onclick=()=>{
   const tab=document.querySelector('.tab.on'); const v=tab?tab.dataset.v:'t';
   if(v==='f'){setOrient(false);printFlags();return;}
@@ -712,6 +746,7 @@ document.getElementById("pdfBtn").onclick=()=>{
   if(v==='t'&&mode==='month'){printMonth();return;}
   setOrient(false);printSchedule();
 };
+document.getElementById("brkBtn").onclick=printBracket;
 
 /* export / import / reset */
 document.getElementById("expBtn").onclick=()=>{const b=new Blob([JSON.stringify(S,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="世界盃計算機備份.json";a.click();URL.revokeObjectURL(a.href);flash("已匯出 ✓");};
@@ -849,7 +884,7 @@ function collectRows(MD){
   ["r32","r16","qf","sf","third","fin"].forEach(rd=>KO[rd].forEach(m=>{
     const w=KO_WHEN[m.no]; if(!w||w[0]!==MD)return; const r=res[m.no];
     const sc=(S.koScore[m.no]||"").split("-");
-    out.push({t:w[1],kind:'k',no:m.no,label:ROUND_LABEL[rd],aName:strip(r.a.name),bName:strip(r.b.name),aTbd:r.a.tbd,bTbd:r.b.tbd,sa:(sc[0]||''),sb:(sc[1]||''),arg:(strip(r.a.name)==="阿根廷"||strip(r.b.name)==="阿根廷")});
+    out.push({t:w[1],kind:'k',no:m.no,label:ROUND_LABEL[rd],aName:r.a.name,bName:r.b.name,aTbd:r.a.tbd,bTbd:r.b.tbd,sa:(sc[0]||''),sb:(sc[1]||''),arg:(strip(r.a.name)==="阿根廷"||strip(r.b.name)==="阿根廷")});
   }));
   out.sort((p,q)=>p.t.localeCompare(q.t));
   return out;
