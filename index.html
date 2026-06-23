@@ -203,6 +203,12 @@
 #printArea .cmn{font-size:7.5pt;line-height:1.45;display:flex;align-items:center;gap:1mm;flex-wrap:wrap}
 #printArea .cmn img{width:4.5mm;height:3.4mm;border:0.2pt solid #C9BFAE}
 #printArea .cmnone{color:#c4bba8;font-size:8pt}
+
+/* ===== 列印週曆：每隊一行、不跳行 ===== */
+#printArea .cmrow{display:flex;align-items:center;gap:1mm;font-size:7.6pt;line-height:1.5;white-space:nowrap;overflow:hidden}
+#printArea .cmrow img{width:4.2mm;height:3.2mm;border:0.2pt solid #C9BFAE;flex:none}
+#printArea .cmrow .nm{overflow:hidden;text-overflow:ellipsis}
+#printArea .cmrow .sc{margin-left:auto;font-weight:700;padding-left:1.5mm}
 </style>
 </head>
 <body>
@@ -628,9 +634,11 @@ function printWeekGrid(){
       const a=strip(e.kind==='g'?e.an:e.aName), b=strip(e.kind==='g'?e.bn:e.bName);
       const fa=flagOf(e.kind==='g'?e.an:e.aName), fb=flagOf(e.kind==='g'?e.bn:e.bName);
       const sa=e.kind==='g'?e.sav:e.sa, sb=e.kind==='g'?e.sbv:e.sb;
-      const has=(sa!==''&&sa!=null&&sb!==''&&sb!=null); const mid=has?`<b>${sa}–${sb}</b>`:'–';
+      const has=(sa!==''&&sa!=null&&sb!==''&&sb!=null);
       const tag=e.kind==='g'?'':`<span class="kob">${e.label} #${e.no}</span>`;
-      return `<div class="cm${e.arg?' arg':''}"><div class="cmt">${e.arg?'★ ':''}${e.t}${tag}</div><div class="cmn">${fa?`<img src="${fa}">`:''}${esc(a)} ${mid} ${esc(b)}${fb?`<img src="${fb}">`:''}</div></div>`;
+      return `<div class="cm${e.arg?' arg':''}"><div class="cmt">${e.arg?'★ ':''}${e.t}${tag}</div>`+
+        `<div class="cmrow">${fa?`<img src="${fa}">`:''}<span class="nm">${esc(a)}</span>${has?`<span class="sc">${sa}</span>`:''}</div>`+
+        `<div class="cmrow">${fb?`<img src="${fb}">`:''}<span class="nm">${esc(b)}</span>${has?`<span class="sc">${sb}</span>`:''}</div></div>`;
     }).join('')||'<div class="cmnone">—</div>';
     body+=`<td class="${we?'we':''}">${cell}</td>`;
   }
@@ -655,7 +663,25 @@ document.getElementById("impFile").onchange=e=>{const f=e.target.files[0];if(!f)
 document.getElementById("resetBtn").onclick=()=>{if(confirm("還原預設並清除你輸入的比分？建議先匯出備份。")){S=buildDefault();save();renderGroups();renderKO();renderFlags();}};
 
 /* Word export (knockout schedule) */
+function wordWeek(){
+  const mon=mondayOf(cur), wd=["一","二","三","四","五","六","日"]; let head='',body='';
+  for(let i=0;i<7;i++){const d=addDays(mon,i),MD=md2(d);
+    head+=`<th>${wd[i]}<br>${MD}</th>`;
+    const rows=collectRows(MD);
+    const cell=rows.map(e=>{
+      const a=strip(e.kind==='g'?e.an:e.aName), b=strip(e.kind==='g'?e.bn:e.bName);
+      const sa=e.kind==='g'?e.sav:e.sa, sb=e.kind==='g'?e.sbv:e.sb;
+      const has=(sa!==''&&sa!=null&&sb!==''&&sb!=null);
+      const tag=e.kind==='g'?'':` (${e.label} #${e.no})`;
+      return `<p class=m>${e.arg?'★ ':''}${e.t}${tag}<br>${esc(a)} ${has?('<b>'+sa+'–'+sb+'</b>'):'–'} ${esc(b)}</p>`;
+    }).join('')||'<p class=m>—</p>';
+    body+=`<td>${cell}</td>`;
+  }
+  const html=`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><style>@page WordSection1{size:29.7cm 21.0cm;mso-page-orientation:landscape;margin:1.2cm}div.WordSection1{page:WordSection1}body{font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif}h2{font-size:13pt;margin:0 0 8pt}table{border-collapse:collapse;width:100%;table-layout:fixed}th,td{border:1px solid #B9AE99;vertical-align:top;width:14.28%;padding:4pt}th{background:#F1ECE0;font-size:9pt}p.m{margin:0 0 6pt;font-size:8.5pt;line-height:1.3}</style></head><body><div class=WordSection1><h2>2026 FIFA 世界盃 · 本週賽程　${md2(mon)}–${md2(addDays(mon,6))}（台灣時間）　★ 阿根廷</h2><table><tr>${head}</tr><tr>${body}</tr></table></div></body></html>`;
+  const b=new Blob(["\ufeff"+html],{type:"application/msword"});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=`世界盃本週賽程_${md2(mon).replace('/','-')}.doc`;a.click();URL.revokeObjectURL(a.href);flash("已匯出本週 Word ✓");
+}
 document.getElementById("docBtn").onclick=()=>{
+  const _t=document.querySelector('.tab.on'); if(_t&&_t.dataset.v==='t'&&mode==='week'){wordWeek();return;}
   const {res}=fullResolve(); let rows="";
   for(const round of ["r32","r16","qf","sf","third","fin"]){
     rows+=`<tr><td colspan="4" style="background:#EBE4D8;font-weight:bold">${ROUND_LABEL[round]}</td></tr>`;
