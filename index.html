@@ -969,7 +969,7 @@ function renderClean(){
 renderGroups();
 renderClean();
 renderToday();
-if("serviceWorker" in navigator){addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}
+if("serviceWorker" in navigator){addEventListener("load",function(){navigator.serviceWorker.register("sw.js").then(function(reg){try{reg.update();}catch(e){}}).catch(function(){});var _ref=false;navigator.serviceWorker.addEventListener("controllerchange",function(){if(_ref)return;_ref=true;location.reload();});});}
 </script>
 </body>
 </html>
