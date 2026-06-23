@@ -716,10 +716,12 @@ function printBracket(){
   const isArg=no=>{const r=res[no];return !!r&&(strip(r.a.name)==="阿根廷"||strip(r.b.name)==="阿根廷");};
   function box(no,x,ccy,th){const r=res[no]||{a:{name:''},b:{name:''}};const y=ccy-boxH/2;const sc=(S.koScore[no]||"").split(/[-–:]/);const hl=isArg(no);
     const fill=th?'#FFF8EE':(hl?'#EAF2FB':'#fff'),strk=th?'#D9B589':(hl?'#1F6FB2':'#B9AE99'),sw=hl?1.5:0.7;
+    const fa=flagOf(r.a.name),fb=flagOf(r.b.name),hasf=(fa||fb),tx=x+(hasf?19:5);
+    const img=(f,iy)=>f?`<image href="${f}" xlink:href="${f}" x="${x+4}" y="${iy}" width="12" height="9" preserveAspectRatio="none"/>`:'';
     return `<rect x="${x}" y="${y}" width="${boxW}" height="${boxH}" rx="3" fill="${fill}" stroke="${strk}" stroke-width="${sw}"/>`
       +`<line x1="${x}" y1="${y+boxH/2}" x2="${x+boxW}" y2="${y+boxH/2}" stroke="#E9E1D0" stroke-width="0.5"/>`
-      +`<text x="${x+5}" y="${y+11}" font-size="8" fill="#222">${esc(strip(r.a.name)||'')}</text><text x="${x+boxW-4}" y="${y+11}" font-size="8" text-anchor="end" font-weight="bold">${sc[0]||''}</text>`
-      +`<text x="${x+5}" y="${y+24}" font-size="8" fill="#222">${esc(strip(r.b.name)||'')}</text><text x="${x+boxW-4}" y="${y+24}" font-size="8" text-anchor="end" font-weight="bold">${sc[1]||''}</text>`
+      +img(fa,y+3.5)+`<text x="${tx}" y="${y+11}" font-size="8" fill="#222">${esc(strip(r.a.name)||'')}</text><text x="${x+boxW-4}" y="${y+11}" font-size="8" text-anchor="end" font-weight="bold">${sc[0]||''}</text>`
+      +img(fb,y+17)+`<text x="${tx}" y="${y+24}" font-size="8" fill="#222">${esc(strip(r.b.name)||'')}</text><text x="${x+boxW-4}" y="${y+24}" font-size="8" text-anchor="end" font-weight="bold">${sc[1]||''}</text>`
       +`<text x="${x+1}" y="${y-2}" font-size="6" fill="#aaa">#${no}</text>`;
   }
   function conn(no){const f=FE[no];const c0=cy[f[0]],c1=cy[f[1]],cc=cy[no];const xfR=colX[colOf[f[0]]]+boxW;const xcL=colX[colOf[no]];const midx=(xfR+xcL)/2;const hl=isArg(no);
@@ -734,7 +736,7 @@ function printBracket(){
   const hd=heads.map((t,i)=>`<text x="${colX[i]+boxW/2}" y="26" font-size="11" text-anchor="middle" font-weight="bold" fill="#33485E">${t}</text>`).join('');
   const W=colX[4]+boxW+14,H=thirdY+boxH+22;
   document.getElementById("printArea").innerHTML=`<div class="pt-h">2026 FIFA 世界盃 · 淘汰賽賽程樹（台灣時間）　藍＝阿根廷路線</div>`
-    +`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;max-height:186mm" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans TC',sans-serif">${hd}${svg}</svg>`;
+    +`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;max-height:186mm" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" font-family="'Noto Sans TC',sans-serif">${hd}${svg}</svg>`;
   setOrient(true); window.print();
 }
 document.getElementById("pdfBtn").onclick=()=>{
