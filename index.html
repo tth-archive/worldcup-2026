@@ -209,6 +209,26 @@
 #printArea .cmrow img{width:4.2mm;height:3.2mm;border:0.2pt solid #C9BFAE;flex:none}
 #printArea .cmrow .nm{overflow:hidden;text-overflow:ellipsis}
 #printArea .cmrow .sc{margin-left:auto;font-weight:700;padding-left:1.5mm}
+
+/* ===== 月檢視 + 整月列印 ===== */
+.mscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.mcal{border-collapse:collapse;width:100%;min-width:760px;table-layout:fixed}
+.mcal th{background:#F1ECE0;border:1px solid #E0D7C6;font-size:12px;padding:4px;font-weight:700;color:#6b6357}
+.mcal td{border:1px solid #ECE4D6;vertical-align:top;width:14.28%;height:92px;padding:3px;background:#fff}
+.mcal td.we{background:#FBF5EA}
+.mcal td.out{background:#FAF7F0}
+.mcal td.out .mdn{color:#C9BFAE}
+.mcal td.td{box-shadow:inset 0 0 0 2px #C7402F}
+.mcal .mdn{font-weight:700;font-size:12px;color:#33485E;margin-bottom:2px}
+.mcal .mm{font-size:10px;line-height:1.4;color:#3A352C;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mcal .mm.arg{color:#1F6FB2;font-weight:700}
+#printArea .mcal{min-width:0;width:100%}
+#printArea .mcal th{border:0.4pt solid #B9AE99;background:#F3EEE3;font-size:8pt;padding:1mm}
+#printArea .mcal td{border:0.4pt solid #CFC6B4;height:30mm;padding:1mm}
+#printArea .mcal td.out{background:#f7f3ec}
+#printArea .mcal .mdn{font-weight:700;font-size:7.5pt;margin-bottom:0.5mm;color:#333}
+#printArea .mcal .mm{font-size:6.4pt;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#printArea .mcal .mm.arg{font-weight:700}
 </style>
 </head>
 <body>
@@ -243,7 +263,7 @@
   <section class="view on" id="view-t">
     <p class="hint">台灣時間。「日」看當天、「週」看整週（清單或格狀）。直接填比分，積分與淘汰賽同步更新。‹ › 換日／換週，按「今天」跳回。</p>
     <div class="segwrap">
-      <div class="seg" id="segMode"><button data-m="day" class="on">日</button><button data-m="week">週</button></div>
+      <div class="seg" id="segMode"><button data-m="day" class="on">日</button><button data-m="week">週</button><button data-m="month">月</button></div>
       <div class="seg" id="segLay" style="display:none"><button data-l="list" class="on">清單</button><button data-l="grid">格狀</button></div>
     </div>
     <div class="daynav">
@@ -328,16 +348,50 @@ const GROUPS={
 };
 /* known results to prefill: [group, teamAname, teamBname, ga, gb] (names without flag) */
 const PREFILL=[
- ["A","墨西哥","韓國",1,0],["A","捷克","南非",1,1],
- ["B","瑞士","波赫",4,1],["B","加拿大","卡達",6,0],
- ["C","摩洛哥","蘇格蘭",1,0],["C","巴西","海地",3,0],
- ["D","美國","澳洲",2,0],["D","巴拉圭","土耳其",1,0],
- ["E","德國","象牙海岸",2,1],["E","厄瓜多","古拉索",0,0],
- ["F","荷蘭","瑞典",5,1],["F","日本","突尼西亞",4,0],
- ["I","法國","塞內加爾",3,1],["I","挪威","伊拉克",4,1],
- ["J","阿根廷","阿爾及利亞",3,0],["J","奧地利","約旦",3,1],
- ["K","哥倫比亞","烏茲別克",3,1],["K","葡萄牙","剛果民主",1,1],
- ["L","英格蘭","克羅埃西亞",4,2],["L","迦納","巴拿馬",1,0],
+ ["A","墨西哥","南非",2,0],
+ ["A","韓國","捷克",0,2],
+ ["B","加拿大","波赫",1,0],
+ ["B","卡達","瑞士",1,1],
+ ["C","巴西","摩洛哥",1,1],
+ ["C","海地","蘇格蘭",0,1],
+ ["D","美國","巴拉圭",2,0],
+ ["D","澳洲","土耳其",2,0],
+ ["E","德國","古拉索",2,1],
+ ["E","象牙海岸","厄瓜多",1,0],
+ ["F","荷蘭","日本",2,2],
+ ["F","瑞典","突尼西亞",2,1],
+ ["G","比利時","埃及",1,1],
+ ["G","伊朗","紐西蘭",2,2],
+ ["H","西班牙","維德角",0,0],
+ ["H","烏拉圭","沙烏地阿拉伯",1,1],
+ ["I","法國","塞內加爾",3,1],
+ ["I","挪威","伊拉克",4,1],
+ ["J","阿根廷","阿爾及利亞",3,0],
+ ["J","奧地利","約旦",3,1],
+ ["K","哥倫比亞","烏茲別克",3,1],
+ ["K","葡萄牙","剛果民主",1,1],
+ ["L","英格蘭","克羅埃西亞",4,2],
+ ["L","迦納","巴拿馬",1,0],
+ ["A","捷克","南非",1,1],
+ ["A","墨西哥","韓國",1,0],
+ ["B","瑞士","波赫",4,1],
+ ["B","加拿大","卡達",6,0],
+ ["C","蘇格蘭","摩洛哥",0,1],
+ ["C","巴西","海地",3,0],
+ ["D","美國","澳洲",2,0],
+ ["D","土耳其","巴拉圭",0,1],
+ ["E","德國","象牙海岸",2,1],
+ ["E","厄瓜多","古拉索",0,0],
+ ["F","荷蘭","瑞典",5,1],
+ ["F","突尼西亞","日本",0,4],
+ ["G","比利時","伊朗",0,0],
+ ["G","紐西蘭","埃及",1,3],
+ ["H","西班牙","沙烏地阿拉伯",4,0],
+ ["H","烏拉圭","維德角",2,2],
+ ["I","法國","伊拉克",3,0],
+ ["I","挪威","塞內加爾",3,2],
+ ["J","阿根廷","奧地利",2,0],
+ ["J","約旦","阿爾及利亞",1,2],
 ];
 /* knockout structure (official 2026) */
 const KO={
@@ -378,10 +432,12 @@ function buildDefault(){
     const m=gm[g].find(x=> (strip(x.a)===an&&strip(x.b)===bn)||(strip(x.a)===bn&&strip(x.b)===an));
     if(m){ if(strip(m.a)===an){m.sa=ga;m.sb=gb;} else {m.sa=gb;m.sb=ga;} }
   }
-  return {gm, koScore:{}, koWin:{}, koThird:{}, koOver:{}};
+  return {gm, koScore:{}, koWin:{}, koThird:{}, koOver:{}, dataVer:DATA_VER};
 }
+const DATA_VER=2;
+function applyOfficial(st){ for(const [g,an,bn,ga,gb] of PREFILL){ const arr=st.gm&&st.gm[g]; if(!arr)continue; const m=arr.find(x=>(strip(x.a)===an&&strip(x.b)===bn)||(strip(x.a)===bn&&strip(x.b)===an)); if(m){ if(strip(m.a)===an){m.sa=ga;m.sb=gb;} else {m.sa=gb;m.sb=ga;} } } }
 let S=load();
-function load(){ try{const r=localStorage.getItem(KEY); if(r){const o=JSON.parse(r); if(o&&o.gm)return o;}}catch(e){} return buildDefault(); }
+function load(){ try{const r=localStorage.getItem(KEY); if(r){const o=JSON.parse(r); if(o&&o.gm){ if(o.dataVer!==DATA_VER){ applyOfficial(o); o.dataVer=DATA_VER; try{localStorage.setItem(KEY,JSON.stringify(o));}catch(e){} } return o; } } }catch(e){} return buildDefault(); }
 function save(){ try{localStorage.setItem(KEY,JSON.stringify(S)); flash("已儲存 ✓");}catch(e){flash("（無法存檔，請匯出備份）");} }
 let st; function flash(t){const e=document.getElementById("saveState");e.textContent=t;clearTimeout(st);st=setTimeout(()=>e.textContent="",1500);}
 function debSave(){clearTimeout(save._t);save._t=setTimeout(save,300);}
@@ -653,6 +709,7 @@ document.getElementById("pdfBtn").onclick=()=>{
   if(v==='k'){setOrient(false);printKO();return;}
   if(v==='g'||v==='clean'){setOrient(false);printStandings();return;}
   if(v==='t'&&mode==='week'){printWeekGrid();return;}
+  if(v==='t'&&mode==='month'){printMonth();return;}
   setOrient(false);printSchedule();
 };
 
@@ -698,14 +755,78 @@ document.getElementById("archband").innerHTML=Array.from({length:30},(_,i)=>'<di
 const WD3=["日","一","二","三","四","五","六"];
 /* [date,time,group,plainA,plainB] 台灣時間；6/27-6/28 最後一輪依循環賽校正 */
 const GFIX=[
- ["6/21","01:00","F","荷蘭","瑞典"],["6/21","04:00","E","德國","象牙海岸"],["6/21","08:00","E","厄瓜多","古拉索"],["6/21","12:00","F","突尼西亞","日本"],
- ["6/22","00:00","H","西班牙","沙烏地阿拉伯"],["6/22","03:00","G","比利時","伊朗"],["6/22","06:00","H","烏拉圭","維德角"],["6/22","09:00","G","紐西蘭","埃及"],
- ["6/23","01:00","J","阿根廷","奧地利"],["6/23","05:00","I","法國","伊拉克"],["6/23","08:00","I","挪威","塞內加爾"],["6/23","11:00","J","約旦","阿爾及利亞"],
- ["6/24","01:00","K","葡萄牙","烏茲別克"],["6/24","04:00","L","英格蘭","迦納"],["6/24","07:00","L","巴拿馬","克羅埃西亞"],["6/24","10:00","K","哥倫比亞","剛果民主"],
- ["6/25","03:00","B","瑞士","加拿大"],["6/25","03:00","B","波赫","卡達"],["6/25","06:00","C","摩洛哥","海地"],["6/25","06:00","C","蘇格蘭","巴西"],["6/25","09:00","A","南非","韓國"],["6/25","09:00","A","捷克","墨西哥"],
- ["6/26","04:00","E","古拉索","象牙海岸"],["6/26","04:00","E","厄瓜多","德國"],["6/26","07:00","F","突尼西亞","荷蘭"],["6/26","07:00","F","日本","瑞典"],["6/26","10:00","D","土耳其","美國"],["6/26","10:00","D","巴拉圭","澳洲"],
- ["6/27","03:00","H","沙烏地阿拉伯","烏拉圭"],["6/27","03:00","H","維德角","西班牙"],["6/27","06:00","G","伊朗","紐西蘭"],["6/27","06:00","G","埃及","比利時"],["6/27","09:00","I","法國","挪威"],["6/27","09:00","I","塞內加爾","伊拉克"],
- ["6/28","03:00","J","阿根廷","約旦"],["6/28","03:00","J","阿爾及利亞","奧地利"],["6/28","06:00","L","英格蘭","巴拿馬"],["6/28","06:00","L","克羅埃西亞","迦納"],["6/28","09:00","K","哥倫比亞","葡萄牙"],["6/28","09:00","K","烏茲別克","剛果民主"],
+ ["6/11","19:00","A","墨西哥","南非"],
+ ["6/12","02:00","A","韓國","捷克"],
+ ["6/12","19:00","B","加拿大","波赫"],
+ ["6/13","01:00","D","美國","巴拉圭"],
+ ["6/13","19:00","B","卡達","瑞士"],
+ ["6/13","22:00","C","巴西","摩洛哥"],
+ ["6/14","01:00","C","海地","蘇格蘭"],
+ ["6/14","04:00","D","澳洲","土耳其"],
+ ["6/14","17:00","E","德國","古拉索"],
+ ["6/14","20:00","F","荷蘭","日本"],
+ ["6/14","23:00","E","象牙海岸","厄瓜多"],
+ ["6/15","02:00","F","瑞典","突尼西亞"],
+ ["6/15","16:00","H","西班牙","維德角"],
+ ["6/16","07:00","G","比利時","埃及"],
+ ["6/16","10:00","H","烏拉圭","沙烏地阿拉伯"],
+ ["6/16","13:00","G","伊朗","紐西蘭"],
+ ["6/17","04:00","I","法國","塞內加爾"],
+ ["6/17","07:00","I","挪威","伊拉克"],
+ ["6/17","09:00","J","阿根廷","阿爾及利亞"],
+ ["6/17","12:00","J","奧地利","約旦"],
+ ["6/18","01:00","K","哥倫比亞","烏茲別克"],
+ ["6/18","04:00","K","葡萄牙","剛果民主"],
+ ["6/18","04:00","L","英格蘭","克羅埃西亞"],
+ ["6/18","07:00","L","迦納","巴拿馬"],
+ ["6/18","21:00","A","捷克","南非"],
+ ["6/18","23:30","B","瑞士","波赫"],
+ ["6/19","02:00","B","加拿大","卡達"],
+ ["6/19","09:00","A","墨西哥","韓國"],
+ ["6/20","03:00","D","美國","澳洲"],
+ ["6/20","06:00","C","蘇格蘭","摩洛哥"],
+ ["6/20","08:30","C","巴西","海地"],
+ ["6/20","11:00","D","土耳其","巴拉圭"],
+ ["6/21","01:00","F","荷蘭","瑞典"],
+ ["6/21","04:00","E","德國","象牙海岸"],
+ ["6/21","08:00","E","厄瓜多","古拉索"],
+ ["6/21","12:00","F","突尼西亞","日本"],
+ ["6/22","00:00","H","西班牙","沙烏地阿拉伯"],
+ ["6/22","03:00","G","比利時","伊朗"],
+ ["6/22","06:00","H","烏拉圭","維德角"],
+ ["6/22","09:00","G","紐西蘭","埃及"],
+ ["6/23","01:00","J","阿根廷","奧地利"],
+ ["6/23","05:00","I","法國","伊拉克"],
+ ["6/23","08:00","I","挪威","塞內加爾"],
+ ["6/23","11:00","J","約旦","阿爾及利亞"],
+ ["6/24","01:00","K","葡萄牙","烏茲別克"],
+ ["6/24","04:00","L","英格蘭","迦納"],
+ ["6/24","07:00","L","巴拿馬","克羅埃西亞"],
+ ["6/24","10:00","K","哥倫比亞","剛果民主"],
+ ["6/25","03:00","B","瑞士","加拿大"],
+ ["6/25","03:00","B","波赫","卡達"],
+ ["6/25","06:00","C","摩洛哥","海地"],
+ ["6/25","06:00","C","蘇格蘭","巴西"],
+ ["6/25","09:00","A","南非","韓國"],
+ ["6/25","09:00","A","捷克","墨西哥"],
+ ["6/26","04:00","E","古拉索","象牙海岸"],
+ ["6/26","04:00","E","厄瓜多","德國"],
+ ["6/26","07:00","F","突尼西亞","荷蘭"],
+ ["6/26","07:00","F","日本","瑞典"],
+ ["6/26","10:00","D","土耳其","美國"],
+ ["6/26","10:00","D","巴拉圭","澳洲"],
+ ["6/27","03:00","I","挪威","法國"],
+ ["6/27","03:00","I","塞內加爾","伊拉克"],
+ ["6/27","08:00","H","維德角","沙烏地阿拉伯"],
+ ["6/27","08:00","H","烏拉圭","西班牙"],
+ ["6/27","11:00","G","紐西蘭","比利時"],
+ ["6/27","11:00","G","埃及","伊朗"],
+ ["6/28","03:00","L","克羅埃西亞","迦納"],
+ ["6/28","03:00","K","剛果民主","烏茲別克"],
+ ["6/28","05:30","K","哥倫比亞","葡萄牙"],
+ ["6/28","05:30","J","阿爾及利亞","奧地利"],
+ ["6/28","08:00","J","約旦","阿根廷"],
+ ["6/28","08:00","L","巴拿馬","英格蘭"],
 ];
 const mdNum=s=>{const p=s.split("/");return (+p[0])*100+(+p[1]);};
 function todayMD(){const t=new Date();return (t.getMonth()+1)+"/"+t.getDate();}
@@ -746,7 +867,7 @@ function gridRow(e){
   return '<div class="gcell-m '+(e.arg?'arg':'')+'"><div class="gt">'+e.t+' <span>'+tag+'</span></div><div class="gnm">'+esc(a)+'</div><div class="gsc"><input class="sc" '+da+' value="'+sa+'" inputmode="numeric"><span>–</span><input class="sc" '+db+' value="'+sb+'" inputmode="numeric"></div><div class="gnm">'+esc(b)+'</div></div>';
 }
 let mode="day", wlay="list";
-const T0=new Date(2026,5,12), T1=new Date(2026,6,20);
+const T0=new Date(2026,5,11), T1=new Date(2026,6,20);
 let cur=new Date(); if(cur<T0)cur=new Date(T0); if(cur>T1)cur=new Date(T1);
 const md2=d=>(d.getMonth()+1)+"/"+d.getDate();
 const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x;};
@@ -762,7 +883,7 @@ function render(){
     lbl.innerHTML=MD+' <span class="twd">('+wdOf(MD)+')</span>'+(MD===tMD?' <span class="tnow">今天</span>':'');
     const rows=collectRows(MD);
     W.innerHTML=rows.length?rows.map(fullRow).join(''):'<div class="tnone">這天沒有比賽　·　用 ‹ › 看其他日子</div>';
-  }else{
+  }else if(mode==='week'){
     const mon=mondayOf(cur), sun=addDays(mon,6);
     const tt=new Date(); tt.setHours(0,0,0,0); const inWk=(tt>=mon&&tt<=sun);
     lbl.innerHTML=md2(mon)+'–'+md2(sun)+(inWk?' <span class="tnow">本週</span>':'');
@@ -781,13 +902,43 @@ function render(){
       }
       W.innerHTML='<div class="wkgrid">'+cols+'</div>';
     }
+  }else{
+    const yy=cur.getFullYear(),mo2=cur.getMonth();const nd0=new Date();
+    lbl.innerHTML=yy+'年 '+(mo2+1)+'月'+((yy===nd0.getFullYear()&&mo2===nd0.getMonth())?' <span class="tnow">本月</span>':'');
+    W.innerHTML='<div class="mscroll">'+renderMonthGrid()+'</div>';
   }
-  {const tb=document.getElementById('ttoday');let cure;if(mode==='day'){cure=(md2(cur)===todayMD());}else{const mo=mondayOf(cur),su=addDays(mo,6);const tt=new Date();tt.setHours(0,0,0,0);cure=(tt>=mo&&tt<=su);}if(tb){tb.classList.toggle('off',cure);tb.classList.toggle('live',!cure);}}
+  {const tb=document.getElementById('ttoday');let cure;const nd=new Date();if(mode==='day'){cure=(md2(cur)===todayMD());}else if(mode==='week'){const mo=mondayOf(cur),su=addDays(mo,6);nd.setHours(0,0,0,0);cure=(nd>=mo&&nd<=su);}else{cure=(cur.getFullYear()===nd.getFullYear()&&cur.getMonth()===nd.getMonth());}if(tb){tb.classList.toggle('off',cure);tb.classList.toggle('live',!cure);}}
 }
 function renderToday(){render();}
-document.getElementById("tprev").onclick=function(){cur=clampD(addDays(cur,mode==='day'?-1:-7));render();};
-document.getElementById("tnext").onclick=function(){cur=clampD(addDays(cur,mode==='day'?1:7));render();};
-document.getElementById("ttoday").onclick=function(){cur=clampD(new Date());render();};
+function renderMonthGrid(){
+  const y=cur.getFullYear(), m=cur.getMonth();
+  const first=new Date(y,m,1), last=new Date(y,m+1,0);
+  const wdh=["一","二","三","四","五","六","日"];
+  let head=wdh.map(w=>`<th>${w}</th>`).join('');
+  let body='', d=mondayOf(first), guard=0;
+  while(guard++<8){
+    let cells='';
+    for(let i=0;i<7;i++){
+      const inM=(d.getMonth()===m), MD=md2(d), we=(d.getDay()===0||d.getDay()===6), isT=(MD===todayMD());
+      const rows=inM?collectRows(MD):[];
+      const items=rows.map(e=>{const a=e.kind==='g'?e.an:e.aName,b=e.kind==='g'?e.bn:e.bName;const sa=e.kind==='g'?e.sav:e.sa,sb=e.kind==='g'?e.sbv:e.sb;const has=(sa!==''&&sa!=null&&sb!==''&&sb!=null);return `<div class="mm${e.arg?' arg':''}">${e.arg?'★':''}${e.t} ${esc(a)}${has?` ${sa}-${sb} `:' – '}${esc(b)}</div>`;}).join('');
+      cells+=`<td class="${we?'we':''}${inM?'':' out'}${isT?' td':''}"><div class="mdn">${d.getDate()}</div>${items}</td>`;
+      d=addDays(d,1);
+    }
+    body+=`<tr>${cells}</tr>`;
+    if(d>last && d.getDay()===1) break;
+  }
+  return `<table class="mcal"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
+}
+function printMonth(){
+  const y=cur.getFullYear(),m=cur.getMonth();
+  document.getElementById("printArea").innerHTML=`<div class="pt-h">2026 FIFA 世界盃 · ${y}年 ${m+1}月賽程（台灣時間）　★ 阿根廷</div>`+renderMonthGrid();
+  setOrient(true); window.print();
+}
+function clampMonth(mi){let m=mi;if(m<5)m=5;if(m>6)m=6;return new Date(2026,m,1);}
+document.getElementById("tprev").onclick=function(){ if(mode==='day')cur=clampD(addDays(cur,-1)); else if(mode==='week')cur=clampD(addDays(cur,-7)); else cur=clampMonth(cur.getMonth()-1); render(); };
+document.getElementById("tnext").onclick=function(){ if(mode==='day')cur=clampD(addDays(cur,1)); else if(mode==='week')cur=clampD(addDays(cur,7)); else cur=clampMonth(cur.getMonth()+1); render(); };
+document.getElementById("ttoday").onclick=function(){ cur=clampD(new Date()); render(); };
 document.querySelectorAll('#segMode button').forEach(b=>b.onclick=function(){mode=b.dataset.m;render();});
 document.querySelectorAll('#segLay button').forEach(b=>b.onclick=function(){wlay=b.dataset.l;render();});
 document.getElementById("todaywrap").addEventListener("input",function(e){
